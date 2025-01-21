@@ -1,0 +1,8 @@
+.config/Code/Cache
+.config/Code/CachedData
+.config/Code/CachedExtensionVSIXs
+.config/discord/Cache
+.config/discord/Code Cache
+.cache/mozilla/firefox
+.cache/google-chrome
+.cache/vscode-cpptools
