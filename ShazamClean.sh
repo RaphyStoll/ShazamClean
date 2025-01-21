@@ -75,8 +75,9 @@ display_space(){
 }
 
 #main script
-echo -e $BOLD"Home size:\t" $(df -h | grep home | awk '{print $2}') $RESET
-echo -e $YELLOW"Space before:\t" $(display_space) $RESET
+SPACE_BEFORE=$(display_space)
 process_directories_from_file "$INPUT_FILE"
-echo -e $GREEN"Space after:\t" $(display_space) $RESET
+echo -e $BOLD"Total home size:\t" $(df -h | grep home | awk '{print $2}') $RESET
+echo -e $RED"Free space before:\t" $SPACE_BEFORE $RESET
+echo -e $GREEN"Free space after:\t" $(display_space) $RESET
 echo -e $ITALIC "by Shazam ⚡︎bgolding (42Lausanne)" $RESET
