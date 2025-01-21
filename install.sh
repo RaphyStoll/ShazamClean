@@ -22,19 +22,20 @@ else
 fi
 
 if ! grep "$SCRIPT_ALIAS" $ZSHRC &> /dev/null; then
-	echo "Adding $COMMAND_NAME alias to $ZSHRC"
 	echo "" >> $ZSHRC
 	echo $SCRIPT_ALIAS >> $ZSHRC
+	echo "Added $COMMAND_NAME alias to $ZSHRC"
 else
 	echo "Alias already exists in $ZSHRC"
 fi
 
 if ! grep "$SCRIPT_ALIAS" $BASHRC &> /dev/null; then
-	echo "Adding $COMMAND_NAME alias to $BASHRC"
 	echo "" >> $BASHRC
 	echo $SCRIPT_ALIAS >> $BASHRC
+	echo "Added $COMMAND_NAME alias to $BASHRC"
 else
 	echo "Alias already exists in $BASHRC"
 fi
 
-echo "Installation complete. Command available: $COMMAND_NAME"
+echo "Installation complete ($INSTALL_DIR)"
+echo "Command available on shell restart: $COMMAND_NAME"
