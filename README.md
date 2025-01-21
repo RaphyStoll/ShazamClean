@@ -2,13 +2,13 @@
 A cleaner script to free up space on the Linux sessions of 42Lausanne.
 
 # Install
-Run the following to install:
+ - Run the following to install:
 	```sh
 	git clone https://github.com/BWG31/ShazamClean && cd ShazamClean && ./install.sh && cd .. && rm -rf ShazamClean
 	```
 
 # Uninstall
-Run the following to uninstall:
+ - Run the following to uninstall:
 	```sh
 	~/.config/ShazamClean/uninstall.sh
 	```
