@@ -9,7 +9,7 @@ RESET="\033[0m"
 UNDERLINE="\033[4m"
 
 abort(){
-	echo $RED"ABORTED"$RESET
+	echo -e $RED"ABORTED"$RESET
 	exit 1
 }
 
