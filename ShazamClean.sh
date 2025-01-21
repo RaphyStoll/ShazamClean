@@ -6,7 +6,9 @@ RED="\033[1;91m"
 GREEN="\033[1;92m"
 YELLOW="\033[1;93m"
 RESET="\033[0m"
+BOLD="\033[1m"
 UNDERLINE="\033[4m"
+ITALIC="\033[3;93m"
 
 abort(){
 	echo -e $RED"ABORTED"$RESET
@@ -72,6 +74,8 @@ display_space(){
 }
 
 #main script
+echo -e $BOLD"Home size:\t" $(df -h | grep home | awk '{print $2}') $RESET
 echo -e $YELLOW"Space before:\t" $(display_space) $RESET
 process_directories_from_file "$INPUT_FILE"
 echo -e $GREEN"Space after:\t" $(display_space) $RESET
+echo -e $ITALIC "by Shazam ⚡︎bgolding (42Lausanne)" $RESET
