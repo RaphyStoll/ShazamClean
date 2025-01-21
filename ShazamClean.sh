@@ -1,6 +1,7 @@
 #!/bin/bash
 
-INPUT_FILE="cleaning_list.txt"
+INSTALL_DIR="$HOME/.config/ShazamClean"
+INPUT_FILE="$INSTALL_DIR/cleaning_list.txt"
 
 RED="\033[1;91m"
 GREEN="\033[1;92m"
