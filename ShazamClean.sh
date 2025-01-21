@@ -5,6 +5,11 @@ INPUT_FILE="cleaning_list.txt"
 LOGS_FOLDER="logs"
 LOGFILE="$LOGS_FOLDER/cleaning_log_$TIMESTAMP.log"
 
+RED="\033[91m"
+GREEN="\033[92m"
+YELLOW="\033[93m"
+RESET="\033[0m"
+
 abort(){
 	echo "ABORTED" >> "$LOGFILE"
 	exit 1
@@ -34,7 +39,7 @@ process_directory(){
 		echo "Error: process_directory expected 1 argument: got $#: aborting" >&2
 		abort
 	fi
-	local dir=$1
+	local dir="$HOME/$1"
 	local size
 	if [ ! -d "$dir" ]; then
 		size="---"
@@ -64,6 +69,8 @@ process_directories_from_file(){
 }
 
 #main script
+echo -e $YELLOW"Space before:\t" $(df -h | grep home | awk '{print $4}') $RESET
 mkdir -p $LOGS_FOLDER
 process_directories_from_file "$INPUT_FILE"
+echo -e $GREEN"Space after:\t" $(df -h | grep home | awk '{print $4}') $RESET
 echo "Processing complete. Logs written to '$LOGFILE'"
