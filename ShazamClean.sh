@@ -1,17 +1,15 @@
 #!/bin/bash
 
-TIMESTAMP=$(date +"%Y-%m-%d_%H:%M:%S")
 INPUT_FILE="cleaning_list.txt"
-LOGS_FOLDER="logs"
-LOGFILE="$LOGS_FOLDER/cleaning_log_$TIMESTAMP.log"
 
-RED="\033[91m"
-GREEN="\033[92m"
-YELLOW="\033[93m"
+RED="\033[1;91m"
+GREEN="\033[1;92m"
+YELLOW="\033[1;93m"
 RESET="\033[0m"
+UNDERLINE="\033[4m"
 
 abort(){
-	echo "ABORTED" >> "$LOGFILE"
+	echo $RED"ABORTED"$RESET
 	exit 1
 }
 
@@ -22,7 +20,7 @@ log_size(){
 	fi
 	local dir_name=$1
 	local dir_size=$2
-	echo -e "$dir_size\t$dir_name" >> "$LOGFILE"
+	echo -e "$dir_size\t\t$dir_name"
 }
 
 delete_directory_contents(){
@@ -42,7 +40,7 @@ process_directory(){
 	local dir="$HOME/$1"
 	local size
 	if [ ! -d "$dir" ]; then
-		size="---"
+		size="Noexist"
 	else
 		size=$(du -sh "$dir" | awk '{print $1}')
 		delete_directory_contents "$dir"
@@ -60,6 +58,7 @@ process_directories_from_file(){
 		echo "Error: input file "$file" does not exist or cannot be read: aborting" >&2
 		abort
 	fi
+	echo -e $UNDERLINE"CLEARED\t\tDIRECTORY"$RESET
 	while IFS= read -r dir || [ -n "$dir" ]; do
 		if [ -z "$dir" ]; then
 			continue
@@ -68,9 +67,11 @@ process_directories_from_file(){
 	done < "$file"
 }
 
+display_space(){
+	df -h | grep home | awk '{print $4}'
+}
+
 #main script
-echo -e $YELLOW"Space before:\t" $(df -h | grep home | awk '{print $4}') $RESET
-mkdir -p $LOGS_FOLDER
+echo -e $YELLOW"Space before:\t" $(display_space) $RESET
 process_directories_from_file "$INPUT_FILE"
-echo -e $GREEN"Space after:\t" $(df -h | grep home | awk '{print $4}') $RESET
-echo "Processing complete. Logs written to '$LOGFILE'"
+echo -e $GREEN"Space after:\t" $(display_space) $RESET
