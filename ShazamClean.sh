@@ -102,7 +102,7 @@ main() {
 	echo -e $BOLD_GREEN"Free space after:\t" $(display_space) $RESET
 	echo "=============================="
 	echo -e $CYAN"Edit cleaning list here: $INPUT_FILE" $RESET
-	echo -e $ITALIC_YELLOW "by Shazam ⚡︎bgolding (42Lausanne)" $RESET
+	echo -e $ITALIC_YELLOW "by Shazam ⚡︎bgolding (42Lausanne) & jvoisard (42Lausanne)" $RESET
 }
 
 main
