@@ -71,13 +71,13 @@ process_directories_from_file(){
 }
 
 display_space(){
-	df -h | grep home | awk '{print $4}'
+	df -h | grep $USER | awk '{print $4}'
 }
 
 #main script
 SPACE_BEFORE=$(display_space)
 process_directories_from_file "$INPUT_FILE"
-echo -e $BOLD"Total home size:\t" $(df -h | grep home | awk '{print $2}') $RESET
+echo -e $BOLD"Total home size:\t" $(df -h | grep $USER | awk '{print $2}') $RESET
 echo -e $RED"Free space before:\t" $SPACE_BEFORE $RESET
 echo -e $GREEN"Free space after:\t" $(display_space) $RESET
 echo -e $ITALIC "by Shazam ⚡︎bgolding (42Lausanne)" $RESET
