@@ -3,16 +3,20 @@
 INSTALL_DIR="$HOME/.config/ShazamClean"
 INPUT_FILE="$INSTALL_DIR/cleaning_list.txt"
 
-RED="\033[1;91m"
-GREEN="\033[1;92m"
-YELLOW="\033[1;93m"
+GREEN="\033[0;92m"
+YELLOW="\033[0;93m"
+CYAN="\033[0;96m"
+BOLD_RED="\033[1;91m"
+BOLD_GREEN="\033[1;92m"
+BOLD_YELLOW="\033[1;93m"
 RESET="\033[0m"
 BOLD="\033[1m"
 UNDERLINE="\033[4m"
-ITALIC="\033[3;93m"
+ITALIC_WHITE="\033[3;0m"
+ITALIC_YELLOW="\033[3;93m"
 
 abort(){
-	echo -e $RED"ABORTED"$RESET
+	echo -e $BOLD_RED"ABORTED"$RESET
 	exit 1
 }
 
@@ -67,6 +71,7 @@ process_directories_from_file(){
 			continue
 		fi
 		process_directory "$dir"
+		sleep 0.01
 	done < "$file"
 }
 
@@ -75,9 +80,18 @@ display_space(){
 }
 
 #main script
+echo -e $YELLOW"Cleaning..."$RESET
+sleep 0.5
 SPACE_BEFORE=$(display_space)
+echo "=============================="
 process_directories_from_file "$INPUT_FILE"
+echo "=============================="
+echo -e $GREEN"Clean complete!"$RESET
+sleep 0.5
+echo "=============================="
 echo -e $BOLD"Total home size:\t" $(df -h | grep $USER | awk '{print $2}') $RESET
-echo -e $RED"Free space before:\t" $SPACE_BEFORE $RESET
-echo -e $GREEN"Free space after:\t" $(display_space) $RESET
-echo -e $ITALIC "by Shazam ⚡︎bgolding (42Lausanne)" $RESET
+echo -e $BOLD_RED"Free space before:\t" $SPACE_BEFORE $RESET
+echo -e $BOLD_GREEN"Free space after:\t" $(display_space) $RESET
+echo "=============================="
+echo -e $CYAN"Edit cleaning list here: $INPUT_FILE" $RESET
+echo -e $ITALIC_YELLOW "by Shazam ⚡︎bgolding (42Lausanne)" $RESET
