@@ -179,6 +179,18 @@ ensure_config() {
 
 main() {
 	ensure_config
+
+	# parse simple args for non-interactive confirmation
+	FORCE_RM=0
+	while [ "$#" -gt 0 ]; do
+		case "$1" in
+		  -y|--yes) FORCE_RM=1 ; shift ;;
+		  --) shift; break ;;
+		  -*) echo "Unknown option: $1"; shift ;;
+		  *) break ;;
+		esac
+	done
+
 	echo -e $YELLOW"Cleaning..."$RESET
 	sleep 0.5
 	SPACE_BEFORE=$(display_space)
@@ -192,11 +204,15 @@ main() {
 		echo "=============================="
 		echo -e $YELLOW"Files listed for removal (dry-run):"$RESET
 		process_rm_clean "$RM_FILE" 1
-		read -p "Voulez-vous exécuter la suppression réelle des fichiers listés dans $RM_FILE ? (y/N) " resp
-		case "$resp" in
-		  [Yy]*) process_rm_clean "$RM_FILE" 0 1 ;;
-		  *) echo "Suppression RM annulée." ;;
-		esac
+		if [ "$FORCE_RM" -eq 1 ]; then
+			process_rm_clean "$RM_FILE" 0 1
+		else
+			read -p "Voulez-vous exécuter la suppression réelle des fichiers listés dans $RM_FILE ? (y/N) " resp
+			case "$resp" in
+			  [Yy]*) process_rm_clean "$RM_FILE" 0 1 ;;
+			  *) echo "Suppression RM annulée." ;;
+			esac
+		fi
 	fi
 	sleep 0.5
 	echo "=============================="
@@ -206,6 +222,7 @@ main() {
 	echo "=============================="
 	echo -e $CYAN"Edit cleaning list here: $INPUT_FILE" $RESET
 	echo -e $ITALIC_YELLOW "by Shazam ⚡︎bgolding (42Lausanne) & jvoisard (42Lausanne)" $RESET
+	echo -e $ITALIC_YELLOW "modified by raphalme (42Lausanne)" $RESET
 }
 
 main
