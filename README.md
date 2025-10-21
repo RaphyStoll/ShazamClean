@@ -1,35 +1,57 @@
 # ShazamClean
-A cleaner script to free up space on the Linux sessions of 42Lausanne.
 
-# Remote execution
-```sh
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/BWG31/ShazamClean/refs/heads/main/ShazamClean.sh)"
-```
+Script simple pour libérer de l'espace sur les sessions Linux (ex: 42Lausanne).
 
-# Install
+## Exécution à distance
 
-This script simply creates the alias `42clean` in your `~/.zshrc` and `~/.bashrc`.
+Pour télécharger et exécuter directement le script depuis ce dépôt :
 
 ```sh
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/BWG31/ShazamClean/refs/heads/main/install.sh)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/RaphyStoll/ShazamClean/main/ShazamClean.sh)"
 ```
 
-# Run
+## Installation
+
+Le script d'installation crée un alias `42clean` dans `~/.zshrc` et `~/.bashrc`.
+
+```sh
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/RaphyStoll/ShazamClean/main/install.sh)"
+```
+
+## Exécution
+
+Après l'installation :
+
 ```sh
 42clean
 ```
 
-# Uninstall
+Ou lance directement le script du dépôt :
 
 ```sh
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/BWG31/ShazamClean/refs/heads/main/uninstall.sh)"
+./ShazamClean.sh
 ```
 
-# Add new directories to clean
-You can add any new directories you wish to be included in the cleaning process.
+## Désinstallation
 
-Simply add them as a newline to the cleaning_list file located at: `~/.config/ShazamClean/cleaning_list.txt`
+```sh
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/RaphyStoll/ShazamClean/main/uninstall.sh)"
+```
 
-All lines have the $HOME variable prepended to them automatically.
+## Ajouter des répertoires à nettoyer
 
-WARNING: Be careful with what you add to the cleaning list as no confirmation is asked during the script execution.
+Ajoute chaque répertoire (une entrée par ligne) dans : `~/.config/ShazamClean/cleaning_list.txt`.
+
+Remarques :
+- Les chemins listés sont interprétés comme relatifs à `$HOME` (par ex. `/.cache` devient `$HOME/.cache`) à moins d'être fournis en absolu.
+- WARNING: le nettoyage des répertoires supprime leur contenu sans confirmation. Sois prudent avec ce que tu ajoutes.
+
+## Fichier de suppression définitive (`rm_cleaning_list.txt`)
+
+Un fichier séparé `~/.config/ShazamClean/rm_cleaning_list.txt` peut être utilisé pour lister des fichiers et répertoires à supprimer définitivement (pas seulement vider). Le script affiche d'abord un dry-run (liste) et demande confirmation avant suppression réelle.
+
+- Par sécurité, les chemins situés en dehors de `$HOME` sont ignorés.
+- Si `gio` ou `trash-put` est disponible la corbeille est utilisée ; sinon le script retombe sur `rm -rf`.
+- Les suppressions sont journalisées dans `~/.config/ShazamClean/rm_cleaning_list.log`.
+
+Consulte `README_RM.md` pour des instructions de test et de sécurité supplémentaires.

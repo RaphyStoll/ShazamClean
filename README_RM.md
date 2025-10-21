@@ -1,20 +1,48 @@
 Test de la fonctionnalité RM
 
-1) Remplir `~/.config/ShazamClean/rm_cleaning_list.txt` (ou utiliser `tests/rm_test.txt` pour essais).
+1) Préparer le fichier de test
 
-2) Dry-run (simulate) — lance le script et il affichera les fichiers qui seraient supprimés :
+Remplir `~/.config/ShazamClean/rm_cleaning_list.txt` (ou copier `tests/rm_test.txt` pour essais) :
 
-   ./ShazamClean.sh
+```sh
+cp tests/rm_test.txt ~/.config/ShazamClean/rm_cleaning_list.txt
+```
 
-   Le script éxécute par défaut un dry-run pour le fichier RM et demande confirmation avant suppression réelle.
+2) Dry-run (simulation)
 
-3) Pour tester manuellement :
-   - Crée un dossier ~/ .tmp_test_rm_dir et un fichier ~/.tmp_test_rm_file.txt
-   - Assure-toi que `rm_cleaning_list.txt` contient ces chemins (relatifs), puis lance `./ShazamClean.sh`.
+Lance le script principal :
 
-4) Le log des suppressions est écrit dans `~/.config/ShazamClean/rm_cleaning_list.log`.
+```sh
+./ShazamClean.sh
+```
 
-Remarques de sécurité:
-- Les chemins en dehors de $HOME sont ignorés.
-- Si `gio` ou `trash-put` existe, la corbeille est utilisée.
-- Par défaut le script fait une passe d'affichage (dry-run) ; la suppression réelle demande confirmation.
+Le script affiche par défaut une liste (dry-run) des fichiers/répertoires qui seraient supprimés. Il demande ensuite confirmation avant la suppression réelle.
+
+3) Test manuel
+
+- Crée un dossier et un fichier de test :
+
+```sh
+mkdir -p "$HOME/.tmp_test_rm_dir"
+touch "$HOME/.tmp_test_rm_file.txt"
+```
+
+- Assure-toi que `~/.config/ShazamClean/rm_cleaning_list.txt` contient ces chemins (relatifs) puis relance `./ShazamClean.sh`.
+
+4) Vérifier le journal
+
+Le log des suppressions est écrit dans :
+
+```
+~/.config/ShazamClean/rm_cleaning_list.log
+```
+
+Remarques de sécurité
+
+- Les chemins résolus situés en dehors de `$HOME` sont ignorés (protection).
+- Si `gio` ou `trash-put` est disponible, la corbeille est privilégiée ; sinon le script utilise `rm -rf`.
+- Par défaut le script fait une passe d'affichage (dry-run) ; la suppression réelle demande confirmation (sauf si exécutée avec le flag `force`).
+
+---
+
+Voir `README.md` pour le fonctionnement global du script.
