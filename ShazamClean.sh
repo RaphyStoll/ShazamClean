@@ -78,6 +78,11 @@ process_directories_from_file(){
 
 safe_remove() {
 	local target="$1"
+	# If permanent removal requested, remove directly
+	if [ "${PERMANENT_RM:-0}" -eq 1 ]; then
+		rm -rf -- "$target"
+		return $?
+	fi
 	if command -v gio >/dev/null 2>&1; then
 		gio trash -- "$target"
 	elif command -v trash-put >/dev/null 2>&1; then
@@ -85,6 +90,42 @@ safe_remove() {
 	else
 		rm -rf -- "$target"
 	fi
+}
+
+# Parse CLI options into FORCE_RM and PERMANENT_RM.
+# Supports short (-y, -p) and long (--yes, --permanent) and combined short flags (-yp, -py)
+select_options(){
+	FORCE_RM=0
+	PERMANENT_RM=0
+	while [ "$#" -gt 0 ]; do
+		case "$1" in
+			-y|--yes)
+				FORCE_RM=1; shift ;;
+			-p|--permanent)
+				PERMANENT_RM=1; shift ;;
+			--)
+				shift; break ;;
+			-[!-]*)
+				# combined short options like -yp or -py
+				opt="${1#-}"
+				i=1
+				while [ $i -le ${#opt} ]; do
+					ch="${opt:$((i-1)):1}"
+					case "$ch" in
+						y) FORCE_RM=1 ;;
+						p) PERMANENT_RM=1 ;;
+						*) echo "Unknown option: -$ch" >&2 ;;
+					esac
+					i=$((i+1))
+				done
+				shift ;;
+			-*)
+				echo "Unknown option: $1" >&2; shift ;;
+			*)
+				# non-option argument: ignore for now
+				shift ;;
+		esac
+	done
 }
 
 process_rm_clean(){
@@ -102,35 +143,10 @@ process_rm_clean(){
 		return 1
 	fi
 
-	echo -e $UNDERLINE"CLEARED\t\tDIRECTORY"$RESET
-	# First pass: list targets (show size and path like cleaning)
-	while IFS= read -r line || [ -n "$line" ]; do
-		line="${line%%#*}"
-		line="$(echo -e "$line" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
-		[ -z "$line" ] && continue
-
-		if [[ "$line" = /* ]]; then
-			abs="$line"
-		else
-			abs="$HOME/$line"
-		fi
-		abs="$(readlink -f -- "$abs" 2>/dev/null)" || abs="$HOME/$line"
-
-		case "$abs" in
-			"$HOME"/*)
-				if [ -e "$abs" ]; then
-					size=$(du -sh "$abs" 2>/dev/null | awk '{print $1}')
-				else
-					size="Noexist"
-				fi
-				log_size "$abs" "$size"
-				;;
-			*) echo "Skipping outside-home path: $abs" >&2 ;;
-		esac
-	done < "$file"
-
+	# If asked only to list (dry-run), use the helper to list targets and return.
 	if [ "$dry_run" -eq 1 ]; then
-		echo "Dry-run: no files removed. Use force flag to actually remove." 
+		list_rm_targets "$file"
+		echo "Dry-run: no files removed. Use force flag to actually remove."
 		return 0
 	fi
 
@@ -172,6 +188,36 @@ process_rm_clean(){
 	done < "$file"
 }
 
+# Helper: list targets in rm file with same columns as cleaning
+list_rm_targets(){
+	local file="$1"
+	echo -e $UNDERLINE"CLEARED\t\tDIRECTORY"$RESET
+	while IFS= read -r line || [ -n "$line" ]; do
+		line="${line%%#*}"
+		line="$(echo -e "$line" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+		[ -z "$line" ] && continue
+
+		if [[ "$line" = /* ]]; then
+			abs="$line"
+		else
+			abs="$HOME/$line"
+		fi
+		abs="$(readlink -f -- "$abs" 2>/dev/null)" || abs="$HOME/$line"
+
+		case "$abs" in
+			"$HOME"/*)
+				if [ -e "$abs" ]; then
+					size=$(du -sh "$abs" 2>/dev/null | awk '{print $1}')
+				else
+					size="Noexist"
+				fi
+				log_size "$abs" "$size"
+				;;
+			*) echo "Skipping outside-home path: $abs" >&2 ;;
+		esac
+	done < "$file"
+}
+
 display_space(){
 	df -h | grep $USER | awk '{print $4}'
 }
@@ -187,16 +233,8 @@ ensure_config() {
 main() {
 	ensure_config
 
-	# parse simple args for non-interactive confirmation
-	FORCE_RM=0
-	while [ "$#" -gt 0 ]; do
-		case "$1" in
-		  -y|--yes) FORCE_RM=1 ; shift ;;
-		  --) shift; break ;;
-		  -*) echo "Unknown option: $1"; shift ;;
-		  *) break ;;
-		esac
-	done
+	# parse args into FORCE_RM and PERMANENT_RM
+	select_options "$@"
 
 	echo -e $YELLOW"Cleaning..."$RESET
 	sleep 0.5
