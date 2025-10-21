@@ -1,7 +1,17 @@
 #!/bin/bash
 
 COMMAND_NAME="42clean"
-SCRIPT_ALIAS="alias $COMMAND_NAME='/bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/BWG31/ShazamClean/refs/heads/main/ShazamClean.sh)\"'"
+# Configure the GitHub source for the script. Change GITHUB_OWNER to your fork owner
+# and BRANCH to the branch you want to use (e.g. 'main').
+GITHUB_OWNER="RaphyStoll"
+REPO="ShazamClean"
+BRANCH="main"
+# Direct raw link to your fork's script (uses the 'main' branch).
+# If you want a different branch, update this URL or change BRANCH.
+RAW_URL="https://raw.githubusercontent.com/RaphyStoll/ShazamClean/main/ShazamClean.sh"
+
+# The alias runs bash and downloads the script on demand from RAW_URL.
+SCRIPT_ALIAS="alias $COMMAND_NAME='/bin/bash -c \"\$(curl -fsSL $RAW_URL)\"'"
 
 add_alias() {
 	FILE_RC=$1

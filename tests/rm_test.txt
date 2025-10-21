@@ -1,0 +1,10 @@
+# test entries for rm_cleaning_list.txt
+# relative path (under $HOME)
+.tmp_test_rm_dir
+# file in home
+.tmp_test_rm_file.txt
+# absolute path outside home (should be skipped)
+/etc/passwd
+# comment and blank lines
+
+# end
