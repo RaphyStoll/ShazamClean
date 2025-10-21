@@ -102,8 +102,8 @@ process_rm_clean(){
 		return 1
 	fi
 
-	echo -e $UNDERLINE"FILES TO REMOVE"$RESET
-	# First pass: list targets
+	echo -e $UNDERLINE"CLEARED\t\tDIRECTORY"$RESET
+	# First pass: list targets (show size and path like cleaning)
 	while IFS= read -r line || [ -n "$line" ]; do
 		line="${line%%#*}"
 		line="$(echo -e "$line" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
@@ -117,7 +117,14 @@ process_rm_clean(){
 		abs="$(readlink -f -- "$abs" 2>/dev/null)" || abs="$HOME/$line"
 
 		case "$abs" in
-			"$HOME"/*) echo "$abs" ;;
+			"$HOME"/*)
+				if [ -e "$abs" ]; then
+					size=$(du -sh "$abs" 2>/dev/null | awk '{print $1}')
+				else
+					size="Noexist"
+				fi
+				log_size "$abs" "$size"
+				;;
 			*) echo "Skipping outside-home path: $abs" >&2 ;;
 		esac
 	done < "$file"
